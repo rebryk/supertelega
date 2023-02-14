@@ -2,10 +2,23 @@ import os
 
 from telethon import sync
 
-_min_id = 0
-_users_cache = set()
+_users_cache = set()  # to avoid double DMs
 
 MESSAGE_TEMPLATE = os.getenv("AUTO_DM")
+CURSOR_FILE = "cursor.txt"
+
+
+def _read_cursor() -> int:
+    if os.path.exists(CURSOR_FILE):
+        with open(CURSOR_FILE) as file:
+            return int(file.read())
+
+    return 0
+
+
+def _write_cursor(cursor: int):
+    with open(CURSOR_FILE, "w") as file:
+        file.write(str(cursor))
 
 
 async def _dm_user(client: sync.TelegramClient, user_id: int):
@@ -20,15 +33,15 @@ async def _dm_user(client: sync.TelegramClient, user_id: int):
 
 
 async def process(client: sync.TelegramClient, channel):
-    global _min_id
-
-    logs = await client.get_admin_log(channel, join=True, min_id=_min_id)
-
+    min_id = _read_cursor()
+    logs = await client.get_admin_log(channel, join=True, min_id=min_id)
     for log in logs[::-1]:
         try:
             if log.joined and log.input_user and hasattr(log.input_user, "user_id"):
                 user_id = log.input_user.user_id
                 await _dm_user(client, user_id)
-                _min_id = log.id
+                min_id = log.id
         except Exception as e:
             print(f"Failed to process log {log.id}: {e}")
+
+    _write_cursor(min_id)
