@@ -1,3 +1,5 @@
 .DS_Store
-.session
+*.session
+*.session-journal
+.env
 __pycache__
