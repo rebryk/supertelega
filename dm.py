@@ -1,9 +1,11 @@
 import os
 
+import dotenv
 from telethon import sync
 
 _users_cache = set()  # to avoid double DMs
 
+dotenv.load_dotenv()
 MESSAGE_TEMPLATE = os.getenv("AUTO_DM")
 CURSOR_FILE = "cursor.txt"
 
