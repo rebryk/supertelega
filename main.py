@@ -12,7 +12,7 @@ import spam
 dotenv.load_dotenv()
 API_ID = os.getenv("API_ID")
 API_HASH = os.getenv("API_HASH")
-UPDATE_PERIOD = 5  # seconds
+UPDATE_PERIOD = 10  # seconds
 
 
 def parse_args():

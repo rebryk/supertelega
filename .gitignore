@@ -3,3 +3,4 @@
 *.session-journal
 .env
 __pycache__
+cursor.txt
